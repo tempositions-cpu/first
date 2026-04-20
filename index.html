@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS — Precision in Orbit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #000000;
+      --surface:  rgba(255,255,255,0.04);
+      --border:   rgba(255,255,255,0.09);
+      --blue:     #00d4ff;
+      --cyan:     #00ffcc;
+      --gold:     #c8922a;
+      --text:     #f0f4ff;
+      --muted:    rgba(240,244,255,0.5);
+      --dim:      rgba(240,244,255,0.22);
+    }
+
+    html { scroll-behavior: auto; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── LOADER ─────────────────────────────────────────────────────── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #loader.hidden { opacity: 0; visibility: hidden; }
+
+    .loader-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      letter-spacing: 0.5em;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .loader-track {
+      width: 240px;
+      height: 1px;
+      background: rgba(255,255,255,0.1);
+      position: relative;
+    }
+
+    .loader-fill {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      transition: width 0.1s linear;
+    }
+
+    .loader-pct {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--dim);
+    }
+
+    /* ── CANVAS (frame renderer) ────────────────────────────────────── */
+    #frame-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ── NAV ────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.6rem 4rem;
+      transition: background 0.5s, border-color 0.5s;
+    }
+
+    nav.scrolled {
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      letter-spacing: 0.4em;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.8rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--cyan); }
+
+    .nav-cta {
+      padding: 0.55rem 1.6rem !important;
+      border: 1px solid rgba(0,212,255,0.35) !important;
+      color: var(--blue) !important;
+      transition: background 0.3s, border-color 0.3s !important;
+    }
+
+    .nav-cta:hover {
+      background: rgba(0,212,255,0.08) !important;
+      border-color: var(--blue) !important;
+      color: var(--blue) !important;
+    }
+
+    /* ── SCROLL CONTAINER ───────────────────────────────────────────── */
+    #app { position: relative; z-index: 2; }
+
+    /* ── HERO ───────────────────────────────────────────────────────── */
+    #hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 2rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.45em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      animation: riseUp 1s 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+      animation: blink 2.2s infinite;
+    }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3rem, 9vw, 7.5rem);
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: riseUp 1.2s 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .hero-title .line { display: block; }
+
+    .hero-title .grad {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 45%, #7b6fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      margin-top: 2.2rem;
+      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      max-width: 440px;
+      line-height: 1.75;
+      opacity: 0;
+      animation: riseUp 1s 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      opacity: 0;
+      animation: riseUp 1s 1.2s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.7rem;
+      opacity: 0;
+      animation: riseUp 1s 1.6s forwards;
+    }
+
+    .scroll-cue span {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.4em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 56px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .scroll-line::after {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--cyan), transparent);
+      animation: lineScroll 2.4s ease-in-out infinite;
+    }
+
+    @keyframes lineScroll {
+      0%   { transform: translateY(-100%); opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(100%); opacity: 0; }
+    }
+
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(36px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── JOURNEY (scroll room for frame animation) ──────────────────── */
+    #journey { height: 1200vh; position: relative; }
+
+    .journey-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      pointer-events: none;
+    }
+
+    /* Phase text panels */
+    .phase {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      max-width: 360px;
+      opacity: 0;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      transform: translateY(calc(-50% + 16px));
+    }
+
+    .phase.active {
+      opacity: 1;
+      transform: translateY(-50%);
+    }
+
+    .phase-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.45em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.1rem;
+    }
+
+    .phase-h {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      margin-bottom: 1.3rem;
+    }
+
+    .phase-p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.85;
+      font-weight: 300;
+    }
+
+    /* ── PROGRESS DOTS ──────────────────────────────────────────────── */
+    #progress-dots {
+      position: fixed;
+      right: 2.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--dim);
+      transition: background 0.4s, transform 0.4s;
+    }
+
+    .dot.on {
+      background: var(--cyan);
+      transform: scale(1.75);
+      box-shadow: 0 0 6px var(--cyan);
+    }
+
+    /* ── FEATURES ───────────────────────────────────────────────────── */
+    #features {
+      padding: 14rem 5% 10rem;
+      background: linear-gradient(180deg, transparent 0%, rgba(0,212,255,0.025) 40%, transparent 100%);
+      position: relative;
+    }
+
+    #features::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .sec-header {
+      text-align: center;
+      margin-bottom: 7rem;
+    }
+
+    .sec-label {
+      display: inline-block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.5em;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 1.4rem;
+    }
+
+    .sec-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 700;
+      line-height: 1.08;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .f-card {
+      padding: 3rem 2.5rem 3.5rem;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+
+    .f-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--blue), transparent);
+      transform: scaleX(0);
+      transition: transform 0.5s ease;
+    }
+
+    .f-card:hover { background: rgba(0,212,255,0.025); }
+    .f-card:hover::before { transform: scaleX(1); }
+
+    .f-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      color: var(--dim);
+      margin-bottom: 1.5rem;
+    }
+
+    .f-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .f-desc {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.85;
+      font-weight: 300;
+    }
+
+    /* ── SPECS BANNER ───────────────────────────────────────────────── */
+    #specs {
+      padding: 0 5% 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-block {
+      padding: 5.5rem 2rem;
+      text-align: center;
+      background: #000;
+    }
+
+    .spec-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.8rem;
+    }
+
+    .spec-lbl {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    /* ── CTA ────────────────────────────────────────────────────────── */
+    #cta {
+      padding: 16rem 5%;
+      text-align: center;
+      position: relative;
+    }
+
+    #cta::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(0,212,255,0.055) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-label { margin-bottom: 1.5rem; }
+
+    .cta-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 0.95;
+      margin-bottom: 2.2rem;
+    }
+
+    .cta-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 4rem;
+      font-weight: 300;
+      line-height: 1.75;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 1.4rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── BUTTONS ────────────────────────────────────────────────────── */
+    .btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 1rem 2.8rem;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transition: transform 0.3s, box-shadow 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover { transform: translateY(-3px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: #000;
+    }
+
+    .btn-primary:hover { box-shadow: 0 14px 40px rgba(0,212,255,0.3); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(0,212,255,0.4);
+      color: var(--cyan);
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────────────────── */
+    footer {
+      padding: 3rem 4rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    footer p {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--dim);
+    }
+
+    /* ── REVEAL ANIMATION ───────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ─────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .phase { right: 50%; transform: translate(50%, 60px); max-width: 90vw; text-align: center; top: auto; bottom: 4rem; }
+      .phase.active { transform: translate(50%, 0); }
+      #progress-dots { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      #specs { grid-template-columns: repeat(2, 1fr); }
+      #features { padding: 8rem 1.5rem 6rem; }
+      #cta { padding: 10rem 1.5rem; }
+      footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── LOADER ──────────────────────────────────────────────────────────── -->
+<div id="loader">
+  <div class="loader-logo">NEXUS</div>
+  <div class="loader-track"><div class="loader-fill" id="loader-fill"></div></div>
+  <div class="loader-pct" id="loader-pct">Loading — 0%</div>
+</div>
+
+<!-- ── FRAME CANVAS (fixed, renders satellite frames) ─────────────────── -->
+<canvas id="frame-canvas"></canvas>
+
+<!-- ── NAVIGATION ─────────────────────────────────────────────────────── -->
+<nav id="nav">
+  <div class="nav-logo">NEXUS</div>
+  <ul class="nav-links">
+    <li><a href="#">Technology</a></li>
+    <li><a href="#">Satellites</a></li>
+    <li><a href="#">Research</a></li>
+    <li><a href="#" class="nav-cta">Mission Access</a></li>
+  </ul>
+</nav>
+
+<!-- ── SCROLL PROGRESS DOTS ───────────────────────────────────────────── -->
+<div id="progress-dots">
+  <div class="dot on" id="d0"></div>
+  <div class="dot" id="d1"></div>
+  <div class="dot" id="d2"></div>
+  <div class="dot" id="d3"></div>
+  <div class="dot" id="d4"></div>
+</div>
+
+<!-- ── MAIN APP ────────────────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-eyebrow">Precision Orbital Technology</div>
+    <h1 class="hero-title">
+      <span class="line">Built for</span>
+      <span class="line grad">the Void</span>
+    </h1>
+    <p class="hero-sub">
+      Engineering at the intersection of precision, miniaturization, and cosmic ambition. Every component. Every orbit. Perfected.
+    </p>
+    <div class="hero-cta">
+      <a href="#" class="btn btn-primary">Explore the Satellite</a>
+    </div>
+    <div class="scroll-cue">
+      <span>Scroll to reveal</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- JOURNEY — scroll room for frame animation + phase text -->
+  <section id="journey">
+    <div class="journey-sticky">
+      <div class="phase active" id="phase-0">
+        <div class="phase-num">01 — Architecture</div>
+        <h2 class="phase-h">Engineered<br>to Perfection</h2>
+        <p class="phase-p">A nanosatellite forged from aerospace-grade aluminium and precision optics. Compact enough to hold, powerful enough to redefine orbital intelligence.</p>
+      </div>
+      <div class="phase" id="phase-1">
+        <div class="phase-num">02 — Optics &amp; Sensors</div>
+        <h2 class="phase-h">Eyes in<br>Every Orbit</h2>
+        <p class="phase-p">High-resolution multispectral imaging systems paired with AI-driven processing. Sub-meter clarity from 500km above the Earth's surface.</p>
+      </div>
+      <div class="phase" id="phase-2">
+        <div class="phase-num">03 — Power Systems</div>
+        <h2 class="phase-h">Solar Harvested.<br>Perpetually Powered.</h2>
+        <p class="phase-p">Deployable GaAs solar panels delivering continuous regenerative power through every orbital cycle. Zero interruption. Zero compromise.</p>
+      </div>
+      <div class="phase" id="phase-3">
+        <div class="phase-num">04 — Core Electronics</div>
+        <h2 class="phase-h">Intelligence<br>Runs Deep</h2>
+        <p class="phase-p">Radiation-hardened processors and redundant avionics stacked in precision-machined bays. Processing the cosmos at the speed of light.</p>
+      </div>
+      <div class="phase" id="phase-4">
+        <div class="phase-num">05 — Full Exposure</div>
+        <h2 class="phase-h">Nothing<br>Hidden</h2>
+        <p class="phase-p">Every layer revealed. Structural chassis, thermal management, RF antennae, and propulsion modules — designed as one coherent system.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="sec-header">
+      <div class="sec-label reveal">Core Capabilities</div>
+      <h2 class="sec-title reveal">Beyond the<br>Atmosphere</h2>
+    </div>
+    <div class="features-grid">
+      <div class="f-card reveal">
+        <div class="f-num">01</div>
+        <h3 class="f-title">Sub-Meter Resolution</h3>
+        <p class="f-desc">Multispectral imaging at 0.5m GSD. Detect, classify, and analyse ground-level changes from low Earth orbit with military-grade clarity.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="f-num">02</div>
+        <h3 class="f-title">AI-Onboard Processing</h3>
+        <p class="f-desc">Edge computing in space. Neural inference engines run directly aboard the satellite, transmitting only mission-critical insights.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="f-num">03</div>
+        <h3 class="f-title">Continuous Power</h3>
+        <p class="f-desc">Triple-junction GaAs solar arrays with 28% efficiency, paired with Li-ion battery packs rated for 5+ years of orbital cycling.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="f-num">04</div>
+        <h3 class="f-title">Radiation Hardened</h3>
+        <p class="f-desc">MIL-SPEC-grade shielding protects critical systems from Van Allen belt radiation and solar particle events across the full mission lifetime.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="f-num">05</div>
+        <h3 class="f-title">X-Band Downlink</h3>
+        <p class="f-desc">High-throughput X-band communication at up to 320 Mbps. Encrypted telemetry with AES-256, fully compliant with ITU regulations.</p>
+      </div>
+      <div class="f-card reveal">
+        <div class="f-num">06</div>
+        <h3 class="f-title">Propulsion Module</h3>
+        <p class="f-desc">Cold-gas micro-thruster array enables precision orbital manoeuvring, collision avoidance, and controlled re-entry deorbit.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECS -->
+  <section id="specs">
+    <div class="spec-block reveal">
+      <div class="spec-val">6U</div>
+      <div class="spec-lbl">CubeSat Form Factor</div>
+    </div>
+    <div class="spec-block reveal">
+      <div class="spec-val">500km</div>
+      <div class="spec-lbl">Operational Altitude</div>
+    </div>
+    <div class="spec-block reveal">
+      <div class="spec-val">0.5m</div>
+      <div class="spec-lbl">Ground Resolution</div>
+    </div>
+    <div class="spec-block reveal">
+      <div class="spec-val">5yr</div>
+      <div class="spec-lbl">Mission Design Life</div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="cta">
+    <div class="sec-label cta-label reveal">Mission Ready</div>
+    <h2 class="cta-title reveal">Launch Your<br>Vision</h2>
+    <p class="cta-sub reveal">
+      Secure payload capacity on the next NEXUS constellation deployment. Orbital intelligence, delivered on your timeline.
+    </p>
+    <div class="cta-btns reveal">
+      <a href="#" class="btn btn-primary">Request a Mission Brief</a>
+      <a href="#" class="btn btn-ghost">Technical Datasheet</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2047 NEXUS Orbital Systems. All rights reserved.</p>
+    <p>NEXUS — BUILT FOR THE VOID</p>
+  </footer>
+
+</div>
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const TOTAL_FRAMES = 240;
+const FRAME_PATH   = (n) => `frames/ezgif-frame-${String(n).padStart(3,'0')}.jpg`;
+
+// Phase boundaries (as fraction of journey scroll progress 0→1)
+const PHASES = [
+  { from: 0.00, to: 0.22 }, // Phase 0: assembled
+  { from: 0.18, to: 0.40 }, // Phase 1: optics reveal
+  { from: 0.36, to: 0.58 }, // Phase 2: solar panels lifting
+  { from: 0.54, to: 0.76 }, // Phase 3: core electronics
+  { from: 0.72, to: 1.00 }, // Phase 4: fully exploded
+];
+
+// ── CANVAS SETUP ──────────────────────────────────────────────────────────
+const canvas = document.getElementById('frame-canvas');
+const ctx    = canvas.getContext('2d');
+let cw, ch;
+
+function resizeCanvas() {
+  cw = canvas.width  = window.innerWidth;
+  ch = canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', () => { resizeCanvas(); drawFrame(currentFrame); });
+
+// ── FRAME LOADER ──────────────────────────────────────────────────────────
+const images     = new Array(TOTAL_FRAMES).fill(null);
+let   loaded     = 0;
+let   currentFrame = 0;
+let   targetFrame  = 0;
+let   animReady    = false;
+
+const loaderFill = document.getElementById('loader-fill');
+const loaderPct  = document.getElementById('loader-pct');
+const loaderEl   = document.getElementById('loader');
+
+function loadFrames() {
+  for (let i = 0; i < TOTAL_FRAMES; i++) {
+    const img = new Image();
+    img.onload = () => {
+      loaded++;
+      const pct = Math.round((loaded / TOTAL_FRAMES) * 100);
+      loaderFill.style.width = pct + '%';
+      loaderPct.textContent  = `Loading — ${pct}%`;
+      if (loaded === TOTAL_FRAMES) onAllLoaded();
+    };
+    img.onerror = () => { loaded++; }; // skip bad frames gracefully
+    img.src = FRAME_PATH(i + 1);
+    images[i] = img;
+  }
+}
+
+function onAllLoaded() {
+  animReady = true;
+  loaderEl.classList.add('hidden');
+  drawFrame(0);
+  raf();
+}
+
+// ── FRAME RENDERER ────────────────────────────────────────────────────────
+function drawFrame(idx) {
+  const img = images[idx];
+  if (!img || !img.complete || img.naturalWidth === 0) return;
+
+  const iw = img.naturalWidth;   // 1280
+  const ih = img.naturalHeight;  // 720
+  const scale = Math.min(cw / iw, ch / ih);
+  const dw = iw * scale;
+  const dh = ih * scale;
+  const dx = (cw - dw) / 2;
+  const dy = (ch - dh) / 2;
+
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, dx, dy, dw, dh);
+}
+
+// Smooth frame interpolation in the RAF loop
+function raf() {
+  requestAnimationFrame(raf);
+  if (!animReady) return;
+  // Ease toward targetFrame
+  currentFrame += (targetFrame - currentFrame) * 0.12;
+  drawFrame(Math.round(currentFrame));
+}
+
+// ── SCROLL TRIGGER — JOURNEY ──────────────────────────────────────────────
+const phases    = PHASES.map((_, i) => document.getElementById(`phase-${i}`));
+const dots      = [0,1,2,3,4].map(i => document.getElementById(`d${i}`));
+
+function setPhase(idx) {
+  phases.forEach((p, i) => p.classList.toggle('active', i === idx));
+  dots.forEach((d, i)   => d.classList.toggle('on',     i === idx));
+}
+
+ScrollTrigger.create({
+  trigger:  '#journey',
+  start:    'top top',
+  end:      'bottom bottom',
+  scrub:    1.5,
+  onUpdate: self => {
+    const p = self.progress;
+    // Map progress → frame index
+    targetFrame = Math.round(p * (TOTAL_FRAMES - 1));
+
+    // Determine active phase
+    let activePhase = 0;
+    for (let i = PHASES.length - 1; i >= 0; i--) {
+      if (p >= PHASES[i].from) { activePhase = i; break; }
+    }
+    setPhase(activePhase);
+  },
+});
+
+// ── NAV SCROLL STYLE ──────────────────────────────────────────────────────
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 60);
+}, { passive: true });
+
+// ── REVEAL ON SCROLL ──────────────────────────────────────────────────────
+document.querySelectorAll('.reveal').forEach(el => {
+  ScrollTrigger.create({
+    trigger:      el,
+    start:        'top 88%',
+    onEnter:      () => el.classList.add('in'),
+    onLeaveBack:  () => el.classList.remove('in'),
+  });
+});
+
+// ── STAGGER FEATURE CARDS ─────────────────────────────────────────────────
+document.querySelectorAll('.f-card').forEach((card, i) => {
+  card.style.transitionDelay = `${i * 80}ms`;
+});
+
+// ── START LOADING ─────────────────────────────────────────────────────────
+loadFrames();
+</script>
+</body>
+</html>
