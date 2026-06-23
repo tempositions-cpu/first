@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers — Tempositions School Nursing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --navy: #1a3a5c; --navy-dark: #0d2440; --teal: #2a9d8f; --teal-light: #3ab5a6;
+      --white: #ffffff; --gray-50: #f4f7fc; --gray-100: #e8edf5; --gray-300: #c4cdd9;
+      --gray-500: #6b7c93; --gray-700: #3d4f63; --text: #1a2b3c;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.12); --radius: 10px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--white); line-height: 1.6; }
+    header { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--gray-100); transition: box-shadow 0.3s; }
+    header.scrolled { box-shadow: var(--shadow-md); }
+    nav { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+    .logo { text-decoration: none; display: flex; flex-direction: column; }
+    .logo-name { font-size: 1.4rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
+    .logo-tag { font-size: 0.65rem; font-weight: 500; color: var(--teal); letter-spacing: 0.5px; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { text-decoration: none; color: var(--gray-700); font-size: 0.92rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--navy); font-weight: 600; }
+    .nav-actions { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 9px 20px; border-radius: 7px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+    .btn-outline { border: 1.5px solid var(--navy); color: var(--navy); background: transparent; }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-primary { background: var(--teal); color: var(--white); }
+    .btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); }
+    .btn-navy { background: var(--navy); color: var(--white); }
+    .btn-navy:hover { background: #1e4570; }
+    .btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 8px; }
+    .btn-white { background: var(--white); color: var(--navy); }
+    .btn-white:hover { background: var(--gray-50); }
+    .btn-white-outline { border: 2px solid rgba(255,255,255,0.7); color: var(--white); background: transparent; }
+    .btn-white-outline:hover { background: rgba(255,255,255,0.15); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; }
+    .mobile-menu { display: none; position: absolute; top: 70px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 16px 24px 24px; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); z-index: 99; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--gray-700); text-decoration: none; font-weight: 500; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+
+    .page-hero { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1e5c7a 100%); color: var(--white); padding: 72px 24px 64px; }
+    .page-hero-inner { max-width: 680px; }
+    .hero-badge { display: inline-block; background: rgba(42,157,143,0.25); border: 1px solid rgba(42,157,143,0.5); color: #7de8dc; padding: 5px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 18px; }
+    .page-hero h1 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
+    .page-hero p { font-size: 1.1rem; color: rgba(255,255,255,0.8); max-width: 540px; }
+
+    .benefits-bar { background: var(--teal); color: var(--white); padding: 18px 24px; }
+    .benefits-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
+    .benefit-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; font-weight: 600; }
+
+    section { padding: 80px 24px; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-label { font-size: 0.8rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 14px; }
+    .section-sub { font-size: 1.05rem; color: var(--gray-500); max-width: 540px; }
+    .section-header { margin-bottom: 40px; }
+
+    .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    .filter-btn { padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--gray-300); color: var(--gray-700); font-size: 0.85rem; font-weight: 600; background: var(--white); cursor: pointer; transition: all 0.2s; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--navy); background: var(--navy); color: var(--white); }
+
+    .jobs-list { display: grid; gap: 16px; }
+    .job-row { background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 24px 28px; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: space-between; gap: 24px; transition: all 0.2s; }
+    .job-row:hover { box-shadow: var(--shadow-lg); border-color: var(--teal); transform: translateY(-1px); }
+    .job-row-left { flex: 1; }
+    .job-row-title { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .job-row-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-location { background: var(--gray-100); color: var(--gray-700); }
+    .badge-perdiem { background: #fff3cd; color: #856404; }
+    .badge-fulltime { background: #d1e7dd; color: #0a3622; }
+    .badge-contract { background: #cfe2ff; color: #084298; }
+    .badge-parttime { background: #f8d7da; color: #842029; }
+    .job-row-pay { font-size: 1.05rem; font-weight: 700; color: var(--teal); white-space: nowrap; }
+    .job-row-actions { display: flex; gap: 10px; flex-shrink: 0; }
+
+    .no-listing { background: var(--gray-50); border-radius: 14px; padding: 48px 32px; text-align: center; margin-top: 24px; }
+    .no-listing h3 { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 12px; }
+    .no-listing p { color: var(--gray-500); margin-bottom: 24px; }
+
+    .cta-banner { background: linear-gradient(135deg, var(--teal) 0%, #1a8a7d 100%); color: var(--white); text-align: center; padding: 72px 24px; }
+    .cta-banner h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 12px; }
+    .cta-banner p { font-size: 1.05rem; color: rgba(255,255,255,0.85); margin-bottom: 32px; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    footer { background: var(--navy-dark); color: rgba(255,255,255,0.7); padding: 56px 24px 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand .logo-name { color: var(--white); }
+    .footer-brand .logo-tag { color: #7de8dc; }
+    .footer-brand p { margin-top: 12px; font-size: 0.87rem; line-height: 1.7; }
+    .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .footer-col a { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.875rem; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+
+    @media (max-width: 768px) {
+      .job-row { flex-direction: column; align-items: flex-start; }
+      .job-row-actions { width: 100%; }
+      .job-row-actions .btn { flex: 1; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+      .benefits-inner { gap: 20px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header id="site-header">
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="logo-name">Tempositions</span>
+      <span class="logo-tag">School Nursing Specialists</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="careers.html" class="active">Careers</a>
+      <a href="about.html">About Us</a>
+    </div>
+    <div class="nav-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Employee Login</a>
+      <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" class="btn btn-primary" target="_blank" rel="noopener">Client Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="careers.html">Careers</a>
+    <a href="about.html">About Us</a>
+    <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank">Employee Login</a>
+    <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank">Client Login</a>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="section-inner">
+    <div class="page-hero-inner">
+      <div class="hero-badge">Now Hiring</div>
+      <h1>Build Your Career in School Nursing</h1>
+      <p>Flexible schedules, competitive pay, and the deep satisfaction of supporting student health every single day.</p>
+    </div>
+  </div>
+</div>
+
+<div class="benefits-bar">
+  <div class="benefits-inner">
+    <div class="benefit-item">⏰ Flexible Hours</div>
+    <div class="benefit-item">💰 Competitive Pay</div>
+    <div class="benefit-item">📬 Weekly Paychecks</div>
+    <div class="benefit-item">🏥 Health Benefits</div>
+    <div class="benefit-item">📚 Professional Development</div>
+  </div>
+</div>
+
+<!-- JOB LISTINGS -->
+<section>
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-label">Open Positions</div>
+      <h2 class="section-title">Current Job Openings</h2>
+      <p class="section-sub">All positions require current RN/LVN licensure in the state of placement. Background check required.</p>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">All Positions</button>
+      <button class="filter-btn" data-filter="perdiem">Per Diem</button>
+      <button class="filter-btn" data-filter="fulltime">Full-Time</button>
+      <button class="filter-btn" data-filter="contract">Contract</button>
+    </div>
+
+    <div class="jobs-list" id="jobs-list">
+      <div class="job-row" data-type="perdiem">
+        <div class="job-row-left">
+          <div class="job-row-title">School RN — Los Angeles, CA</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 Los Angeles, CA</span>
+            <span class="badge badge-perdiem">Per Diem</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$55–65 / hr</div>
+        <div class="job-row-actions">
+          <a href="jobs/school-rn-los-angeles.html" class="btn btn-navy">View Job</a>
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Apply</a>
+        </div>
+      </div>
+
+      <div class="job-row" data-type="contract">
+        <div class="job-row-left">
+          <div class="job-row-title">School RN — New York, NY</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 New York, NY</span>
+            <span class="badge badge-contract">Contract</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$60–70 / hr</div>
+        <div class="job-row-actions">
+          <a href="jobs/school-rn-new-york.html" class="btn btn-navy">View Job</a>
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Apply</a>
+        </div>
+      </div>
+
+      <div class="job-row" data-type="fulltime">
+        <div class="job-row-left">
+          <div class="job-row-title">School RN — Chicago, IL</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 Chicago, IL</span>
+            <span class="badge badge-fulltime">Full-Time</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$75,000–85,000 / yr</div>
+        <div class="job-row-actions">
+          <a href="jobs/school-rn-chicago.html" class="btn btn-navy">View Job</a>
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Apply</a>
+        </div>
+      </div>
+
+      <div class="job-row" data-type="fulltime">
+        <div class="job-row-left">
+          <div class="job-row-title">School Nurse Coordinator — Dallas, TX</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 Dallas, TX</span>
+            <span class="badge badge-fulltime">Full-Time</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$80,000–95,000 / yr</div>
+        <div class="job-row-actions">
+          <a href="jobs/school-nurse-coordinator.html" class="btn btn-navy">View Job</a>
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Apply</a>
+        </div>
+      </div>
+
+      <div class="job-row" data-type="perdiem">
+        <div class="job-row-left">
+          <div class="job-row-title">LVN School Nurse — Phoenix, AZ</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 Phoenix, AZ</span>
+            <span class="badge badge-perdiem">Per Diem</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$42–50 / hr</div>
+        <div class="job-row-actions">
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-navy" target="_blank" rel="noopener">Apply Now</a>
+        </div>
+      </div>
+
+      <div class="job-row" data-type="parttime">
+        <div class="job-row-left">
+          <div class="job-row-title">School Health Assistant — Miami, FL</div>
+          <div class="job-row-meta">
+            <span class="badge badge-location">📍 Miami, FL</span>
+            <span class="badge badge-parttime">Part-Time</span>
+          </div>
+        </div>
+        <div class="job-row-pay">$22–28 / hr</div>
+        <div class="job-row-actions">
+          <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-navy" target="_blank" rel="noopener">Apply Now</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-listing">
+      <h3>Don't see your city?</h3>
+      <p>We're expanding nationwide. Send us your resume and we'll reach out when a position opens near you.</p>
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-primary btn-lg" target="_blank" rel="noopener">Create Your Profile</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="section-inner">
+    <h2>Already in Our Network?</h2>
+    <p>Log into your employee portal to view your schedule, submit timesheets, and explore new assignments.</p>
+    <div class="cta-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-white btn-lg" target="_blank" rel="noopener">Employee Portal Login</a>
+      <a href="services.html" class="btn btn-white-outline btn-lg">I'm a School / District</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="logo"><span class="logo-name">Tempositions</span><span class="logo-tag">School Nursing Specialists</span></div><p>Connecting qualified school nurses with districts nationwide since 2009.</p></div>
+      <div class="footer-col"><h4>Pages</h4><a href="index.html">Home</a><a href="services.html">Services</a><a href="careers.html">Careers</a><a href="about.html">About Us</a></div>
+      <div class="footer-col"><h4>Portals</h4><a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank">Employee Login</a><a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank">Client Login</a></div>
+      <div class="footer-col"><h4>Contact</h4><a href="mailto:info@tempositions.com">info@tempositions.com</a><a href="tel:+18005550100">(800) 555-0100</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Tempositions. All rights reserved.</span><span>School Nursing Staffing Specialists</span></div>
+  </div>
+</footer>
+
+<script>
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10));
+  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('open'));
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const jobRows = document.querySelectorAll('.job-row');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      jobRows.forEach(row => {
+        row.style.display = (filter === 'all' || row.dataset.type === filter) ? '' : 'none';
+      });
+    });
+  });
+</script>
+</body>
+</html>

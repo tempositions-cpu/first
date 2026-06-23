@@ -3,911 +3,414 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEXUS — Precision in Orbit</title>
+  <title>Tempositions — School Nursing Specialists</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --bg:       #000000;
-      --surface:  rgba(255,255,255,0.04);
-      --border:   rgba(255,255,255,0.09);
-      --blue:     #00d4ff;
-      --cyan:     #00ffcc;
-      --gold:     #c8922a;
-      --text:     #f0f4ff;
-      --muted:    rgba(240,244,255,0.5);
-      --dim:      rgba(240,244,255,0.22);
+      --navy: #1a3a5c;
+      --navy-dark: #0d2440;
+      --teal: #2a9d8f;
+      --teal-light: #3ab5a6;
+      --white: #ffffff;
+      --gray-50: #f4f7fc;
+      --gray-100: #e8edf5;
+      --gray-300: #c4cdd9;
+      --gray-500: #6b7c93;
+      --gray-700: #3d4f63;
+      --text: #1a2b3c;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.12);
+      --radius: 10px;
     }
 
-    html { scroll-behavior: auto; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--white); line-height: 1.6; }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Space Grotesk', sans-serif;
-      overflow-x: hidden;
+    /* NAV */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      transition: box-shadow 0.3s;
     }
+    header.scrolled { box-shadow: var(--shadow-md); }
+    nav { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+    .logo { text-decoration: none; display: flex; flex-direction: column; }
+    .logo-name { font-size: 1.4rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
+    .logo-tag { font-size: 0.65rem; font-weight: 500; color: var(--teal); letter-spacing: 0.5px; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { text-decoration: none; color: var(--gray-700); font-size: 0.92rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-links a.active { color: var(--navy); font-weight: 600; }
+    .nav-actions { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 9px 20px; border-radius: 7px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+    .btn-outline { border: 1.5px solid var(--navy); color: var(--navy); background: transparent; }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-primary { background: var(--teal); color: var(--white); }
+    .btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(42,157,143,0.35); }
+    .btn-navy { background: var(--navy); color: var(--white); }
+    .btn-navy:hover { background: #1e4570; transform: translateY(-1px); }
+    .btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 8px; }
+    .btn-white-outline { border: 2px solid rgba(255,255,255,0.7); color: var(--white); background: transparent; }
+    .btn-white-outline:hover { background: rgba(255,255,255,0.15); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; transition: all 0.3s; }
+    .mobile-menu { display: none; position: absolute; top: 70px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 16px 24px 24px; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); z-index: 99; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--gray-700); text-decoration: none; font-weight: 500; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
 
-    /* ── LOADER ─────────────────────────────────────────────────────── */
-    #loader {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2.5rem;
-      transition: opacity 0.8s ease, visibility 0.8s;
-    }
-
-    #loader.hidden { opacity: 0; visibility: hidden; }
-
-    .loader-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      font-size: 1.6rem;
-      letter-spacing: 0.5em;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .loader-track {
-      width: 240px;
-      height: 1px;
-      background: rgba(255,255,255,0.1);
-      position: relative;
-    }
-
-    .loader-fill {
-      position: absolute;
-      top: 0; left: 0; bottom: 0;
-      width: 0%;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      transition: width 0.1s linear;
-    }
-
-    .loader-pct {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      color: var(--dim);
-    }
-
-    /* ── CANVAS (frame renderer) ────────────────────────────────────── */
-    #frame-canvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    /* ── NAV ────────────────────────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 300;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.6rem 4rem;
-      transition: background 0.5s, border-color 0.5s;
-    }
-
-    nav.scrolled {
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(24px) saturate(180%);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      font-size: 1.25rem;
-      letter-spacing: 0.4em;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2.8rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.78rem;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    .nav-links a:hover { color: var(--cyan); }
-
-    .nav-cta {
-      padding: 0.55rem 1.6rem !important;
-      border: 1px solid rgba(0,212,255,0.35) !important;
-      color: var(--blue) !important;
-      transition: background 0.3s, border-color 0.3s !important;
-    }
-
-    .nav-cta:hover {
-      background: rgba(0,212,255,0.08) !important;
-      border-color: var(--blue) !important;
-      color: var(--blue) !important;
-    }
-
-    /* ── SCROLL CONTAINER ───────────────────────────────────────────── */
-    #app { position: relative; z-index: 2; }
-
-    /* ── HERO ───────────────────────────────────────────────────────── */
-    #hero {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #1e5c7a 100%);
+      color: var(--white);
+      padding: 100px 24px 80px;
       text-align: center;
-      padding: 0 2rem;
-      position: relative;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.7rem;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.65rem;
-      letter-spacing: 0.45em;
-      color: var(--cyan);
-      text-transform: uppercase;
-      margin-bottom: 2.2rem;
-      opacity: 0;
-      animation: riseUp 1s 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
-    }
-
-    .hero-eyebrow::before {
-      content: '';
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
-      animation: blink 2.2s infinite;
-    }
-
-    @keyframes blink {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .hero-title {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      font-size: clamp(3rem, 9vw, 7.5rem);
-      line-height: 0.92;
-      letter-spacing: -0.01em;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: riseUp 1.2s 0.6s cubic-bezier(0.22,1,0.36,1) forwards;
-    }
-
-    .hero-title .line { display: block; }
-
-    .hero-title .grad {
-      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 45%, #7b6fff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      margin-top: 2.2rem;
-      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-      color: var(--muted);
-      font-weight: 300;
-      letter-spacing: 0.02em;
-      max-width: 440px;
-      line-height: 1.75;
-      opacity: 0;
-      animation: riseUp 1s 0.9s cubic-bezier(0.22,1,0.36,1) forwards;
-    }
-
-    .hero-cta {
-      margin-top: 3rem;
-      opacity: 0;
-      animation: riseUp 1s 1.2s cubic-bezier(0.22,1,0.36,1) forwards;
-    }
-
-    .scroll-cue {
-      position: absolute;
-      bottom: 3rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.7rem;
-      opacity: 0;
-      animation: riseUp 1s 1.6s forwards;
-    }
-
-    .scroll-cue span {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.4em;
-      color: var(--dim);
-      text-transform: uppercase;
-    }
-
-    .scroll-line {
-      width: 1px;
-      height: 56px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .scroll-line::after {
-      content: '';
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, var(--cyan), transparent);
-      animation: lineScroll 2.4s ease-in-out infinite;
-    }
-
-    @keyframes lineScroll {
-      0%   { transform: translateY(-100%); opacity: 0; }
-      20%  { opacity: 1; }
-      80%  { opacity: 1; }
-      100% { transform: translateY(100%); opacity: 0; }
-    }
-
-    @keyframes riseUp {
-      from { opacity: 0; transform: translateY(36px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── JOURNEY (scroll room for frame animation) ──────────────────── */
-    #journey { height: 1200vh; position: relative; }
-
-    .journey-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      pointer-events: none;
-    }
-
-    /* Phase text panels */
-    .phase {
-      position: absolute;
-      right: 5%;
-      top: 50%;
-      transform: translateY(-50%);
-      max-width: 360px;
-      opacity: 0;
-      transition: opacity 0.7s ease, transform 0.7s ease;
-      transform: translateY(calc(-50% + 16px));
-    }
-
-    .phase.active {
-      opacity: 1;
-      transform: translateY(-50%);
-    }
-
-    .phase-num {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.62rem;
-      letter-spacing: 0.45em;
-      color: var(--cyan);
-      text-transform: uppercase;
-      margin-bottom: 1.1rem;
-    }
-
-    .phase-h {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(1.6rem, 2.8vw, 2.6rem);
-      font-weight: 700;
-      line-height: 1.05;
-      margin-bottom: 1.3rem;
-    }
-
-    .phase-p {
-      font-size: 0.88rem;
-      color: var(--muted);
-      line-height: 1.85;
-      font-weight: 300;
-    }
-
-    /* ── PROGRESS DOTS ──────────────────────────────────────────────── */
-    #progress-dots {
-      position: fixed;
-      right: 2.5rem;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .dot {
-      width: 4px; height: 4px;
-      border-radius: 50%;
-      background: var(--dim);
-      transition: background 0.4s, transform 0.4s;
-    }
-
-    .dot.on {
-      background: var(--cyan);
-      transform: scale(1.75);
-      box-shadow: 0 0 6px var(--cyan);
-    }
-
-    /* ── FEATURES ───────────────────────────────────────────────────── */
-    #features {
-      padding: 14rem 5% 10rem;
-      background: linear-gradient(180deg, transparent 0%, rgba(0,212,255,0.025) 40%, transparent 100%);
-      position: relative;
-    }
-
-    #features::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border), transparent);
-    }
-
-    .sec-header {
-      text-align: center;
-      margin-bottom: 7rem;
-    }
-
-    .sec-label {
-      display: inline-block;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.62rem;
-      letter-spacing: 0.5em;
-      color: var(--cyan);
-      text-transform: uppercase;
-      margin-bottom: 1.4rem;
-    }
-
-    .sec-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      font-weight: 700;
-      line-height: 1.08;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-    }
-
-    .f-card {
-      padding: 3rem 2.5rem 3.5rem;
-      background: #000;
       position: relative;
       overflow: hidden;
-      transition: background 0.4s;
     }
-
-    .f-card::before {
+    .hero::before {
       content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--blue), transparent);
-      transform: scaleX(0);
-      transition: transform 0.5s ease;
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 20% 50%, rgba(42,157,143,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 40%);
     }
+    .hero-inner { position: relative; max-width: 780px; margin: 0 auto; }
+    .hero-badge { display: inline-block; background: rgba(42,157,143,0.25); border: 1px solid rgba(42,157,143,0.5); color: #7de8dc; padding: 5px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.15; letter-spacing: -1px; margin-bottom: 20px; }
+    .hero h1 span { color: #7de8dc; }
+    .hero p { font-size: clamp(1rem, 2vw, 1.2rem); color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 36px; font-weight: 400; }
+    .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
-    .f-card:hover { background: rgba(0,212,255,0.025); }
-    .f-card:hover::before { transform: scaleX(1); }
+    /* STATS */
+    .stats { background: var(--white); border-bottom: 1px solid var(--gray-100); }
+    .stats-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: repeat(4, 1fr); }
+    .stat { padding: 28px 24px; text-align: center; border-right: 1px solid var(--gray-100); }
+    .stat:last-child { border-right: none; }
+    .stat-number { font-size: 2rem; font-weight: 800; color: var(--navy); }
+    .stat-label { font-size: 0.85rem; color: var(--gray-500); font-weight: 500; margin-top: 4px; }
 
-    .f-num {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.3em;
-      color: var(--dim);
-      margin-bottom: 1.5rem;
-    }
+    /* SECTIONS */
+    section { padding: 80px 24px; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-label { font-size: 0.8rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .section-title { font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 800; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 14px; }
+    .section-sub { font-size: 1.05rem; color: var(--gray-500); max-width: 540px; }
+    .section-header { margin-bottom: 52px; }
+    .section-header.centered { text-align: center; }
+    .section-header.centered .section-sub { margin: 0 auto; }
 
-    .f-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      margin-bottom: 1rem;
-      line-height: 1.4;
-    }
+    /* WHY CARDS */
+    .why { background: var(--gray-50); }
+    .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .card { background: var(--white); border-radius: var(--radius); padding: 32px; box-shadow: var(--shadow-sm); border: 1px solid var(--gray-100); transition: box-shadow 0.2s, transform 0.2s; }
+    .card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+    .card-icon { font-size: 2rem; margin-bottom: 16px; }
+    .card h3 { font-size: 1.15rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+    .card p { font-size: 0.92rem; color: var(--gray-500); line-height: 1.7; }
 
-    .f-desc {
-      font-size: 0.84rem;
-      color: var(--muted);
-      line-height: 1.85;
-      font-weight: 300;
-    }
+    /* FEATURED JOBS */
+    .job-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .job-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 26px; box-shadow: var(--shadow-sm); transition: all 0.2s; display: flex; flex-direction: column; gap: 12px; }
+    .job-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: var(--teal); }
+    .job-card-title { font-size: 1.05rem; font-weight: 700; color: var(--navy); }
+    .job-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .badge-location { background: var(--gray-100); color: var(--gray-700); }
+    .badge-type-perdiem { background: #fff3cd; color: #856404; }
+    .badge-type-fulltime { background: #d1e7dd; color: #0a3622; }
+    .badge-type-contract { background: #cfe2ff; color: #084298; }
+    .job-pay { font-size: 1rem; font-weight: 700; color: var(--teal); }
+    .job-card a.btn { margin-top: auto; }
 
-    /* ── SPECS BANNER ───────────────────────────────────────────────── */
-    #specs {
-      padding: 0 5% 0;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
+    /* TESTIMONIALS */
+    .testimonials { background: var(--navy); color: var(--white); }
+    .testimonials .section-title { color: var(--white); }
+    .testimonials .section-label { color: #7de8dc; }
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .testi-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); padding: 28px; }
+    .testi-quote { font-size: 0.95rem; color: rgba(255,255,255,0.85); line-height: 1.75; margin-bottom: 20px; font-style: italic; }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--teal); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--white); font-size: 0.9rem; flex-shrink: 0; }
+    .testi-name { font-weight: 600; font-size: 0.9rem; }
+    .testi-role { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
 
-    .spec-block {
-      padding: 5.5rem 2rem;
-      text-align: center;
-      background: #000;
-    }
+    /* CTA BANNER */
+    .cta-banner { background: linear-gradient(135deg, var(--teal) 0%, #1a8a7d 100%); color: var(--white); text-align: center; }
+    .cta-banner h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; margin-bottom: 12px; }
+    .cta-banner p { font-size: 1.05rem; color: rgba(255,255,255,0.85); margin-bottom: 32px; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-white { background: var(--white); color: var(--navy); }
+    .btn-white:hover { background: var(--gray-50); }
 
-    .spec-val {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.2rem, 4vw, 3.8rem);
-      font-weight: 900;
-      line-height: 1;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.8rem;
-    }
+    /* FOOTER */
+    footer { background: var(--navy-dark); color: rgba(255,255,255,0.7); padding: 56px 24px 28px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand .logo-name { color: var(--white); }
+    .footer-brand .logo-tag { color: #7de8dc; }
+    .footer-brand p { margin-top: 12px; font-size: 0.87rem; line-height: 1.7; }
+    .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .footer-col a { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.875rem; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
 
-    .spec-lbl {
-      font-size: 0.72rem;
-      letter-spacing: 0.25em;
-      color: var(--dim);
-      text-transform: uppercase;
-    }
-
-    /* ── CTA ────────────────────────────────────────────────────────── */
-    #cta {
-      padding: 16rem 5%;
-      text-align: center;
-      position: relative;
-    }
-
-    #cta::before {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 800px; height: 800px;
-      background: radial-gradient(circle, rgba(0,212,255,0.055) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .cta-label { margin-bottom: 1.5rem; }
-
-    .cta-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 5.5rem);
-      font-weight: 900;
-      line-height: 0.95;
-      margin-bottom: 2.2rem;
-    }
-
-    .cta-sub {
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto 4rem;
-      font-weight: 300;
-      line-height: 1.75;
-    }
-
-    .cta-btns {
-      display: flex;
-      gap: 1.4rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    /* ── BUTTONS ────────────────────────────────────────────────────── */
-    .btn {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      font-weight: 700;
-      padding: 1rem 2.8rem;
-      border: none;
-      cursor: pointer;
-      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn:hover { transform: translateY(-3px); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      color: #000;
-    }
-
-    .btn-primary:hover { box-shadow: 0 14px 40px rgba(0,212,255,0.3); }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover {
-      border-color: rgba(0,212,255,0.4);
-      color: var(--cyan);
-    }
-
-    /* ── FOOTER ─────────────────────────────────────────────────────── */
-    footer {
-      padding: 3rem 4rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    footer p {
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      color: var(--dim);
-    }
-
-    /* ── REVEAL ANIMATION ───────────────────────────────────────────── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.9s ease, transform 0.9s ease;
-    }
-
-    .reveal.in { opacity: 1; transform: translateY(0); }
-
-    /* ── RESPONSIVE ─────────────────────────────────────────────────── */
     @media (max-width: 900px) {
-      nav { padding: 1.2rem 1.5rem; }
-      .nav-links { display: none; }
-      .phase { right: 50%; transform: translate(50%, 60px); max-width: 90vw; text-align: center; top: auto; bottom: 4rem; }
-      .phase.active { transform: translate(50%, 0); }
-      #progress-dots { display: none; }
-      .features-grid { grid-template-columns: 1fr; }
-      #specs { grid-template-columns: repeat(2, 1fr); }
-      #features { padding: 8rem 1.5rem 6rem; }
-      #cta { padding: 10rem 1.5rem; }
-      footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+      .cards-3, .testi-grid { grid-template-columns: 1fr 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .stat:nth-child(2) { border-right: none; }
+      .stat:nth-child(3) { border-right: 1px solid var(--gray-100); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav-links, .nav-actions { display: none; }
+      .hamburger { display: flex; }
+      .cards-3, .testi-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── LOADER ──────────────────────────────────────────────────────────── -->
-<div id="loader">
-  <div class="loader-logo">NEXUS</div>
-  <div class="loader-track"><div class="loader-fill" id="loader-fill"></div></div>
-  <div class="loader-pct" id="loader-pct">Loading — 0%</div>
+<header id="site-header">
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="logo-name">Tempositions</span>
+      <span class="logo-tag">School Nursing Specialists</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="services.html">Services</a>
+      <a href="careers.html">Careers</a>
+      <a href="about.html">About Us</a>
+    </div>
+    <div class="nav-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Employee Login</a>
+      <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" class="btn btn-primary" target="_blank" rel="noopener">Client Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="services.html">Services</a>
+    <a href="careers.html">Careers</a>
+    <a href="about.html">About Us</a>
+    <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank" rel="noopener">Employee Login</a>
+    <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank" rel="noopener">Client Login</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Trusted School Nursing Placement</div>
+    <h1>Connecting Schools with <span>Exceptional Nurses</span></h1>
+    <p>We specialize in placing qualified RNs, LVNs, and health assistants in K-12 schools nationwide. Fast placements, reliable coverage — every school day.</p>
+    <div class="hero-actions">
+      <a href="careers.html" class="btn btn-primary btn-lg">Find a Job</a>
+      <a href="services.html" class="btn btn-white-outline btn-lg">Hire a Nurse</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat"><div class="stat-number">500+</div><div class="stat-label">Schools Served</div></div>
+    <div class="stat"><div class="stat-number">1,200+</div><div class="stat-label">Nurses Placed</div></div>
+    <div class="stat"><div class="stat-number">15+</div><div class="stat-label">Years Experience</div></div>
+    <div class="stat"><div class="stat-number">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+  </div>
 </div>
 
-<!-- ── FRAME CANVAS (fixed, renders satellite frames) ─────────────────── -->
-<canvas id="frame-canvas"></canvas>
-
-<!-- ── NAVIGATION ─────────────────────────────────────────────────────── -->
-<nav id="nav">
-  <div class="nav-logo">NEXUS</div>
-  <ul class="nav-links">
-    <li><a href="#">Technology</a></li>
-    <li><a href="#">Satellites</a></li>
-    <li><a href="#">Research</a></li>
-    <li><a href="#" class="nav-cta">Mission Access</a></li>
-  </ul>
-</nav>
-
-<!-- ── SCROLL PROGRESS DOTS ───────────────────────────────────────────── -->
-<div id="progress-dots">
-  <div class="dot on" id="d0"></div>
-  <div class="dot" id="d1"></div>
-  <div class="dot" id="d2"></div>
-  <div class="dot" id="d3"></div>
-  <div class="dot" id="d4"></div>
-</div>
-
-<!-- ── MAIN APP ────────────────────────────────────────────────────────── -->
-<div id="app">
-
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-eyebrow">Precision Orbital Technology</div>
-    <h1 class="hero-title">
-      <span class="line">Built for</span>
-      <span class="line grad">the Void</span>
-    </h1>
-    <p class="hero-sub">
-      Engineering at the intersection of precision, miniaturization, and cosmic ambition. Every component. Every orbit. Perfected.
-    </p>
-    <div class="hero-cta">
-      <a href="#" class="btn btn-primary">Explore the Satellite</a>
+<!-- WHY TEMPOSITIONS -->
+<section class="why">
+  <div class="section-inner">
+    <div class="section-header centered">
+      <div class="section-label">Why Choose Us</div>
+      <h2 class="section-title">The Tempositions Difference</h2>
+      <p class="section-sub">We understand school nursing — and we make the process simple for both nurses and districts.</p>
     </div>
-    <div class="scroll-cue">
-      <span>Scroll to reveal</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <!-- JOURNEY — scroll room for frame animation + phase text -->
-  <section id="journey">
-    <div class="journey-sticky">
-      <div class="phase active" id="phase-0">
-        <div class="phase-num">01 — Architecture</div>
-        <h2 class="phase-h">Engineered<br>to Perfection</h2>
-        <p class="phase-p">A nanosatellite forged from aerospace-grade aluminium and precision optics. Compact enough to hold, powerful enough to redefine orbital intelligence.</p>
+    <div class="cards-3">
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Fast Placement</h3>
+        <p>We match schools with qualified nurses in as little as 24 hours. Our deep bench of pre-credentialed candidates means coverage when you need it most.</p>
       </div>
-      <div class="phase" id="phase-1">
-        <div class="phase-num">02 — Optics &amp; Sensors</div>
-        <h2 class="phase-h">Eyes in<br>Every Orbit</h2>
-        <p class="phase-p">High-resolution multispectral imaging systems paired with AI-driven processing. Sub-meter clarity from 500km above the Earth's surface.</p>
+      <div class="card">
+        <div class="card-icon">🎓</div>
+        <h3>School-Specific Expertise</h3>
+        <p>All our nurses have school-specific training, including IEP/504 compliance, emergency response, and pediatric care protocols.</p>
       </div>
-      <div class="phase" id="phase-2">
-        <div class="phase-num">03 — Power Systems</div>
-        <h2 class="phase-h">Solar Harvested.<br>Perpetually Powered.</h2>
-        <p class="phase-p">Deployable GaAs solar panels delivering continuous regenerative power through every orbital cycle. Zero interruption. Zero compromise.</p>
-      </div>
-      <div class="phase" id="phase-3">
-        <div class="phase-num">04 — Core Electronics</div>
-        <h2 class="phase-h">Intelligence<br>Runs Deep</h2>
-        <p class="phase-p">Radiation-hardened processors and redundant avionics stacked in precision-machined bays. Processing the cosmos at the speed of light.</p>
-      </div>
-      <div class="phase" id="phase-4">
-        <div class="phase-num">05 — Full Exposure</div>
-        <h2 class="phase-h">Nothing<br>Hidden</h2>
-        <p class="phase-p">Every layer revealed. Structural chassis, thermal management, RF antennae, and propulsion modules — designed as one coherent system.</p>
+      <div class="card">
+        <div class="card-icon">✅</div>
+        <h3>Full Compliance</h3>
+        <p>We handle background checks, TB testing, CPR certification, and state licensing verification — so you can focus on students.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FEATURES -->
-  <section id="features">
-    <div class="sec-header">
-      <div class="sec-label reveal">Core Capabilities</div>
-      <h2 class="sec-title reveal">Beyond the<br>Atmosphere</h2>
+<!-- FEATURED JOBS -->
+<section>
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-label">Open Positions</div>
+      <h2 class="section-title">Featured Jobs</h2>
+      <p class="section-sub">Browse our latest openings across the country. New positions added daily.</p>
     </div>
-    <div class="features-grid">
-      <div class="f-card reveal">
-        <div class="f-num">01</div>
-        <h3 class="f-title">Sub-Meter Resolution</h3>
-        <p class="f-desc">Multispectral imaging at 0.5m GSD. Detect, classify, and analyse ground-level changes from low Earth orbit with military-grade clarity.</p>
+    <div class="job-grid">
+      <div class="job-card">
+        <div class="job-card-title">School RN</div>
+        <div class="job-meta">
+          <span class="badge badge-location">📍 Los Angeles, CA</span>
+          <span class="badge badge-type-perdiem">Per Diem</span>
+        </div>
+        <div class="job-pay">$55–65 / hour</div>
+        <p style="font-size:0.87rem;color:var(--gray-500);">Provide daily health services for K-12 students. Flexible scheduling, multiple district options.</p>
+        <a href="jobs/school-rn-los-angeles.html" class="btn btn-navy">View Job</a>
       </div>
-      <div class="f-card reveal">
-        <div class="f-num">02</div>
-        <h3 class="f-title">AI-Onboard Processing</h3>
-        <p class="f-desc">Edge computing in space. Neural inference engines run directly aboard the satellite, transmitting only mission-critical insights.</p>
+      <div class="job-card">
+        <div class="job-card-title">School RN</div>
+        <div class="job-meta">
+          <span class="badge badge-location">📍 New York, NY</span>
+          <span class="badge badge-type-contract">Contract</span>
+        </div>
+        <div class="job-pay">$60–70 / hour</div>
+        <p style="font-size:0.87rem;color:var(--gray-500);">Semester-length contract at a large urban district. Competitive pay with housing assistance available.</p>
+        <a href="jobs/school-rn-new-york.html" class="btn btn-navy">View Job</a>
       </div>
-      <div class="f-card reveal">
-        <div class="f-num">03</div>
-        <h3 class="f-title">Continuous Power</h3>
-        <p class="f-desc">Triple-junction GaAs solar arrays with 28% efficiency, paired with Li-ion battery packs rated for 5+ years of orbital cycling.</p>
+      <div class="job-card">
+        <div class="job-card-title">School RN</div>
+        <div class="job-meta">
+          <span class="badge badge-location">📍 Chicago, IL</span>
+          <span class="badge badge-type-fulltime">Full-Time</span>
+        </div>
+        <div class="job-pay">$75,000–85,000 / year</div>
+        <p style="font-size:0.87rem;color:var(--gray-500);">Join a growing district serving 2,400 students. Full benefits, PTO, and retirement plan included.</p>
+        <a href="jobs/school-rn-chicago.html" class="btn btn-navy">View Job</a>
       </div>
-      <div class="f-card reveal">
-        <div class="f-num">04</div>
-        <h3 class="f-title">Radiation Hardened</h3>
-        <p class="f-desc">MIL-SPEC-grade shielding protects critical systems from Van Allen belt radiation and solar particle events across the full mission lifetime.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-num">05</div>
-        <h3 class="f-title">X-Band Downlink</h3>
-        <p class="f-desc">High-throughput X-band communication at up to 320 Mbps. Encrypted telemetry with AES-256, fully compliant with ITU regulations.</p>
-      </div>
-      <div class="f-card reveal">
-        <div class="f-num">06</div>
-        <h3 class="f-title">Propulsion Module</h3>
-        <p class="f-desc">Cold-gas micro-thruster array enables precision orbital manoeuvring, collision avoidance, and controlled re-entry deorbit.</p>
+      <div class="job-card">
+        <div class="job-card-title">School Nurse Coordinator</div>
+        <div class="job-meta">
+          <span class="badge badge-location">📍 Dallas, TX</span>
+          <span class="badge badge-type-fulltime">Full-Time</span>
+        </div>
+        <div class="job-pay">$80,000–95,000 / year</div>
+        <p style="font-size:0.87rem;color:var(--gray-500);">Lead school health programs across a district of 12 campuses. Leadership role with high impact.</p>
+        <a href="jobs/school-nurse-coordinator.html" class="btn btn-navy">View Job</a>
       </div>
     </div>
-  </section>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="careers.html" class="btn btn-outline btn-lg">View All Open Positions</a>
+    </div>
+  </div>
+</section>
 
-  <!-- SPECS -->
-  <section id="specs">
-    <div class="spec-block reveal">
-      <div class="spec-val">6U</div>
-      <div class="spec-lbl">CubeSat Form Factor</div>
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-inner">
+    <div class="section-header centered">
+      <div class="section-label">Testimonials</div>
+      <h2 class="section-title">What Our Partners Say</h2>
     </div>
-    <div class="spec-block reveal">
-      <div class="spec-val">500km</div>
-      <div class="spec-lbl">Operational Altitude</div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-quote">"Tempositions filled our vacancy in less than 48 hours. The nurse they sent was experienced, professional, and fit right into our school culture."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">MK</div>
+          <div>
+            <div class="testi-name">Maria K.</div>
+            <div class="testi-role">Principal, Los Angeles Unified</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"As a travel school nurse, I needed an agency that understood my schedule. Tempositions has always come through with great placements and fair pay."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">JS</div>
+          <div>
+            <div class="testi-name">James S., RN</div>
+            <div class="testi-role">School RN, 6 years with Tempositions</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-quote">"The compliance and credentialing support is outstanding. We never worry about paperwork — Tempositions handles everything so we can focus on students."</div>
+        <div class="testi-author">
+          <div class="testi-avatar">DR</div>
+          <div>
+            <div class="testi-name">Dr. Rachel T.</div>
+            <div class="testi-role">Superintendent, Chicago Public Schools</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="spec-block reveal">
-      <div class="spec-val">0.5m</div>
-      <div class="spec-lbl">Ground Resolution</div>
-    </div>
-    <div class="spec-block reveal">
-      <div class="spec-val">5yr</div>
-      <div class="spec-lbl">Mission Design Life</div>
-    </div>
-  </section>
+  </div>
+</section>
 
-  <!-- CTA -->
-  <section id="cta">
-    <div class="sec-label cta-label reveal">Mission Ready</div>
-    <h2 class="cta-title reveal">Launch Your<br>Vision</h2>
-    <p class="cta-sub reveal">
-      Secure payload capacity on the next NEXUS constellation deployment. Orbital intelligence, delivered on your timeline.
-    </p>
-    <div class="cta-btns reveal">
-      <a href="#" class="btn btn-primary">Request a Mission Brief</a>
-      <a href="#" class="btn btn-ghost">Technical Datasheet</a>
+<!-- CTA BANNER -->
+<section class="cta-banner">
+  <div class="section-inner">
+    <h2>Ready to Join Our Network?</h2>
+    <p>Whether you're a school district needing coverage or a nurse seeking your next opportunity, we're here to help.</p>
+    <div class="cta-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-white btn-lg" target="_blank" rel="noopener">Employee Portal</a>
+      <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" class="btn btn-white-outline btn-lg" target="_blank" rel="noopener">Client Portal</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2047 NEXUS Orbital Systems. All rights reserved.</p>
-    <p>NEXUS — BUILT FOR THE VOID</p>
-  </footer>
-
-</div>
-
-<!-- GSAP -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-name">Tempositions</span>
+          <span class="logo-tag">School Nursing Specialists</span>
+        </div>
+        <p>Connecting qualified school nurses with districts nationwide since 2009. Fast, compliant, and compassionate staffing solutions.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Pages</h4>
+        <a href="index.html">Home</a>
+        <a href="services.html">Services</a>
+        <a href="careers.html">Careers</a>
+        <a href="about.html">About Us</a>
+      </div>
+      <div class="footer-col">
+        <h4>Portals</h4>
+        <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank" rel="noopener">Employee Login</a>
+        <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank" rel="noopener">Client Login</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:info@tempositions.com">info@tempositions.com</a>
+        <a href="tel:+18005550100">(800) 555-0100</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Tempositions. All rights reserved.</span>
+      <span>School Nursing Staffing Specialists</span>
+    </div>
+  </div>
+</footer>
 
 <script>
-gsap.registerPlugin(ScrollTrigger);
-
-// ── CONFIG ────────────────────────────────────────────────────────────────
-const TOTAL_FRAMES = 240;
-const FRAME_PATH   = (n) => `frames/ezgif-frame-${String(n).padStart(3,'0')}.jpg`;
-
-// Phase boundaries (as fraction of journey scroll progress 0→1)
-const PHASES = [
-  { from: 0.00, to: 0.22 }, // Phase 0: assembled
-  { from: 0.18, to: 0.40 }, // Phase 1: optics reveal
-  { from: 0.36, to: 0.58 }, // Phase 2: solar panels lifting
-  { from: 0.54, to: 0.76 }, // Phase 3: core electronics
-  { from: 0.72, to: 1.00 }, // Phase 4: fully exploded
-];
-
-// ── CANVAS SETUP ──────────────────────────────────────────────────────────
-const canvas = document.getElementById('frame-canvas');
-const ctx    = canvas.getContext('2d');
-let cw, ch;
-
-function resizeCanvas() {
-  cw = canvas.width  = window.innerWidth;
-  ch = canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', () => { resizeCanvas(); drawFrame(currentFrame); });
-
-// ── FRAME LOADER ──────────────────────────────────────────────────────────
-const images     = new Array(TOTAL_FRAMES).fill(null);
-let   loaded     = 0;
-let   currentFrame = 0;
-let   targetFrame  = 0;
-let   animReady    = false;
-
-const loaderFill = document.getElementById('loader-fill');
-const loaderPct  = document.getElementById('loader-pct');
-const loaderEl   = document.getElementById('loader');
-
-function loadFrames() {
-  for (let i = 0; i < TOTAL_FRAMES; i++) {
-    const img = new Image();
-    img.onload = () => {
-      loaded++;
-      const pct = Math.round((loaded / TOTAL_FRAMES) * 100);
-      loaderFill.style.width = pct + '%';
-      loaderPct.textContent  = `Loading — ${pct}%`;
-      if (loaded === TOTAL_FRAMES) onAllLoaded();
-    };
-    img.onerror = () => { loaded++; }; // skip bad frames gracefully
-    img.src = FRAME_PATH(i + 1);
-    images[i] = img;
-  }
-}
-
-function onAllLoaded() {
-  animReady = true;
-  loaderEl.classList.add('hidden');
-  drawFrame(0);
-  raf();
-}
-
-// ── FRAME RENDERER ────────────────────────────────────────────────────────
-function drawFrame(idx) {
-  const img = images[idx];
-  if (!img || !img.complete || img.naturalWidth === 0) return;
-
-  const iw = img.naturalWidth;   // 1280
-  const ih = img.naturalHeight;  // 720
-  const scale = Math.min(cw / iw, ch / ih);
-  const dw = iw * scale;
-  const dh = ih * scale;
-  const dx = (cw - dw) / 2;
-  const dy = (ch - dh) / 2;
-
-  ctx.clearRect(0, 0, cw, ch);
-  ctx.drawImage(img, dx, dy, dw, dh);
-}
-
-// Smooth frame interpolation in the RAF loop
-function raf() {
-  requestAnimationFrame(raf);
-  if (!animReady) return;
-  // Ease toward targetFrame
-  currentFrame += (targetFrame - currentFrame) * 0.12;
-  drawFrame(Math.round(currentFrame));
-}
-
-// ── SCROLL TRIGGER — JOURNEY ──────────────────────────────────────────────
-const phases    = PHASES.map((_, i) => document.getElementById(`phase-${i}`));
-const dots      = [0,1,2,3,4].map(i => document.getElementById(`d${i}`));
-
-function setPhase(idx) {
-  phases.forEach((p, i) => p.classList.toggle('active', i === idx));
-  dots.forEach((d, i)   => d.classList.toggle('on',     i === idx));
-}
-
-ScrollTrigger.create({
-  trigger:  '#journey',
-  start:    'top top',
-  end:      'bottom bottom',
-  scrub:    1.5,
-  onUpdate: self => {
-    const p = self.progress;
-    // Map progress → frame index
-    targetFrame = Math.round(p * (TOTAL_FRAMES - 1));
-
-    // Determine active phase
-    let activePhase = 0;
-    for (let i = PHASES.length - 1; i >= 0; i--) {
-      if (p >= PHASES[i].from) { activePhase = i; break; }
-    }
-    setPhase(activePhase);
-  },
-});
-
-// ── NAV SCROLL STYLE ──────────────────────────────────────────────────────
-const navEl = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  navEl.classList.toggle('scrolled', window.scrollY > 60);
-}, { passive: true });
-
-// ── REVEAL ON SCROLL ──────────────────────────────────────────────────────
-document.querySelectorAll('.reveal').forEach(el => {
-  ScrollTrigger.create({
-    trigger:      el,
-    start:        'top 88%',
-    onEnter:      () => el.classList.add('in'),
-    onLeaveBack:  () => el.classList.remove('in'),
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10));
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobile-menu').classList.toggle('open');
   });
-});
-
-// ── STAGGER FEATURE CARDS ─────────────────────────────────────────────────
-document.querySelectorAll('.f-card').forEach((card, i) => {
-  card.style.transitionDelay = `${i * 80}ms`;
-});
-
-// ── START LOADING ─────────────────────────────────────────────────────────
-loadFrames();
 </script>
 </body>
 </html>

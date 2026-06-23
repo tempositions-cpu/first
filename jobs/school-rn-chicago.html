@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School RN — Chicago, IL | Tempositions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --navy: #1a3a5c; --navy-dark: #0d2440; --teal: #2a9d8f; --teal-light: #3ab5a6;
+      --white: #ffffff; --gray-50: #f4f7fc; --gray-100: #e8edf5; --gray-300: #c4cdd9;
+      --gray-500: #6b7c93; --gray-700: #3d4f63; --text: #1a2b3c;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08); --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.12); --radius: 10px;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; color: var(--text); background: var(--white); line-height: 1.6; }
+    header { position: sticky; top: 0; z-index: 100; background: var(--white); border-bottom: 1px solid var(--gray-100); transition: box-shadow 0.3s; }
+    header.scrolled { box-shadow: var(--shadow-md); }
+    nav { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 70px; }
+    .logo { text-decoration: none; display: flex; flex-direction: column; }
+    .logo-name { font-size: 1.4rem; font-weight: 800; color: var(--navy); letter-spacing: -0.5px; }
+    .logo-tag { font-size: 0.65rem; font-weight: 500; color: var(--teal); letter-spacing: 0.5px; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a { text-decoration: none; color: var(--gray-700); font-size: 0.92rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--navy); }
+    .nav-actions { display: flex; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 9px 20px; border-radius: 7px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.2s; cursor: pointer; border: none; }
+    .btn-outline { border: 1.5px solid var(--navy); color: var(--navy); background: transparent; }
+    .btn-outline:hover { background: var(--navy); color: var(--white); }
+    .btn-primary { background: var(--teal); color: var(--white); }
+    .btn-primary:hover { background: var(--teal-light); transform: translateY(-1px); }
+    .btn-lg { padding: 14px 32px; font-size: 1rem; border-radius: 8px; }
+    .btn-full { width: 100%; }
+    .btn-white { background: var(--white); color: var(--navy); }
+    .btn-white:hover { background: var(--gray-50); }
+    .btn-white-outline { border: 2px solid rgba(255,255,255,0.6); color: var(--white); background: transparent; }
+    .btn-white-outline:hover { background: rgba(255,255,255,0.1); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--navy); border-radius: 2px; }
+    .mobile-menu { display: none; position: absolute; top: 70px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--gray-100); padding: 16px 24px 24px; flex-direction: column; gap: 12px; box-shadow: var(--shadow-md); z-index: 99; }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a { color: var(--gray-700); text-decoration: none; font-weight: 500; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+    .breadcrumb { background: var(--gray-50); border-bottom: 1px solid var(--gray-100); padding: 12px 24px; }
+    .breadcrumb-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 8px; align-items: center; font-size: 0.83rem; color: var(--gray-500); }
+    .breadcrumb a { color: var(--teal); text-decoration: none; font-weight: 500; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .job-header { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%); color: var(--white); padding: 52px 24px; }
+    .job-header-inner { max-width: 1200px; margin: 0 auto; }
+    .job-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .job-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 600; }
+    .badge-location { background: rgba(255,255,255,0.15); color: var(--white); }
+    .badge-type { background: #d1e7dd; color: #0a3622; }
+    .job-pay-header { font-size: 1.5rem; font-weight: 800; color: #7de8dc; }
+    .job-header-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+    .job-body { max-width: 1200px; margin: 0 auto; padding: 52px 24px; display: grid; grid-template-columns: 1fr 340px; gap: 40px; align-items: start; }
+    .job-content h2 { font-size: 1.25rem; font-weight: 700; color: var(--navy); margin: 36px 0 14px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-100); }
+    .job-content h2:first-child { margin-top: 0; }
+    .job-content p { font-size: 0.95rem; color: var(--gray-700); line-height: 1.8; margin-bottom: 14px; }
+    .job-content ul { padding-left: 20px; margin-bottom: 14px; }
+    .job-content ul li { font-size: 0.95rem; color: var(--gray-700); line-height: 1.8; margin-bottom: 6px; }
+    .job-sidebar { position: sticky; top: 90px; display: grid; gap: 20px; }
+    .sidebar-card { background: var(--white); border: 1px solid var(--gray-100); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow-sm); }
+    .sidebar-card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 18px; }
+    .quick-detail { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--gray-100); font-size: 0.87rem; }
+    .quick-detail:last-child { border-bottom: none; padding-bottom: 0; }
+    .quick-detail-label { color: var(--gray-500); }
+    .quick-detail-value { font-weight: 600; color: var(--navy); }
+    .similar-jobs { list-style: none; display: grid; gap: 12px; }
+    .similar-job-link { text-decoration: none; display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; border: 1px solid var(--gray-100); transition: all 0.2s; }
+    .similar-job-link:hover { border-color: var(--teal); background: var(--gray-50); }
+    .similar-job-title { font-size: 0.9rem; font-weight: 600; color: var(--navy); }
+    .similar-job-meta { font-size: 0.78rem; color: var(--gray-500); }
+    footer { background: var(--navy-dark); color: rgba(255,255,255,0.7); padding: 56px 24px 28px; margin-top: 60px; }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 48px; }
+    .footer-brand .logo-name { color: var(--white); } .footer-brand .logo-tag { color: #7de8dc; }
+    .footer-brand p { margin-top: 12px; font-size: 0.87rem; line-height: 1.7; }
+    .footer-col h4 { color: var(--white); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+    .footer-col a { display: block; color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.875rem; margin-bottom: 10px; transition: color 0.2s; }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; }
+    @media (max-width: 900px) { .job-body { grid-template-columns: 1fr; } .job-sidebar { position: static; } .footer-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .nav-links, .nav-actions { display: none; } .hamburger { display: flex; } .footer-grid { grid-template-columns: 1fr; } .footer-bottom { flex-direction: column; text-align: center; } }
+  </style>
+</head>
+<body>
+<header id="site-header">
+  <nav>
+    <a href="../index.html" class="logo"><span class="logo-name">Tempositions</span><span class="logo-tag">School Nursing Specialists</span></a>
+    <div class="nav-links"><a href="../index.html">Home</a><a href="../services.html">Services</a><a href="../careers.html">Careers</a><a href="../about.html">About Us</a></div>
+    <div class="nav-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-outline" target="_blank" rel="noopener">Employee Login</a>
+      <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" class="btn btn-primary" target="_blank" rel="noopener">Client Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="../index.html">Home</a><a href="../services.html">Services</a><a href="../careers.html">Careers</a><a href="../about.html">About Us</a>
+    <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank">Employee Login</a>
+    <a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank">Client Login</a>
+  </div>
+</header>
+
+<div class="breadcrumb"><div class="breadcrumb-inner"><a href="../index.html">Home</a> › <a href="../careers.html">Careers</a> › School RN — Chicago, IL</div></div>
+
+<div class="job-header">
+  <div class="job-header-inner">
+    <h1>School Registered Nurse (RN)</h1>
+    <div class="job-meta">
+      <span class="badge badge-location">📍 Chicago, IL</span>
+      <span class="badge badge-type">Full-Time</span>
+    </div>
+    <div class="job-pay-header">$75,000–85,000 / year</div>
+    <div class="job-header-actions">
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-white btn-lg" target="_blank" rel="noopener">Apply Now</a>
+      <a href="../careers.html" class="btn btn-white-outline btn-lg">← Back to Jobs</a>
+    </div>
+  </div>
+</div>
+
+<div class="job-body">
+  <div class="job-content">
+    <h2>Job Overview</h2>
+    <p>Tempositions is partnering with a growing Chicago-area school district to place a full-time Registered Nurse for the upcoming academic year. This permanent placement offers a competitive salary, comprehensive benefits, and the opportunity to build lasting relationships with students, families, and staff in a supportive school community.</p>
+    <p>The district serves approximately 2,400 students across three campuses. You will be the primary health professional at one campus, with district health leadership support and collaboration with nurses at the other campuses.</p>
+
+    <h2>Responsibilities</h2>
+    <ul>
+      <li>Serve as the campus school nurse for an elementary or middle school campus</li>
+      <li>Provide first aid, illness assessment, injury triage, and emergency response</li>
+      <li>Administer scheduled and as-needed medications per physician orders</li>
+      <li>Maintain and update student health records in compliance with Illinois state law and HIPAA</li>
+      <li>Develop and implement individualized health plans (IHPs) for students with chronic conditions</li>
+      <li>Conduct mandated health screenings (vision, hearing, BMI, scoliosis)</li>
+      <li>Collaborate with special education staff on nursing components of IEPs and 504 plans</li>
+      <li>Provide health education to students, staff, and families</li>
+      <li>Participate in district health committee meetings and professional development</li>
+    </ul>
+
+    <h2>Requirements</h2>
+    <ul>
+      <li>Active, unencumbered Illinois RN license in good standing</li>
+      <li>BSN required; MSN preferred</li>
+      <li>School Nurse Endorsement (or willingness to obtain within 2 years)</li>
+      <li>Current BLS/CPR certification</li>
+      <li>Fingerprint-based background clearance</li>
+      <li>Minimum 3 years nursing experience; school or pediatric nursing strongly preferred</li>
+      <li>Experience with student health information systems (e.g., Infinite Campus, PowerSchool Health)</li>
+      <li>Strong organizational and communication skills</li>
+    </ul>
+
+    <h2>Benefits</h2>
+    <ul>
+      <li>Competitive salary: $75,000–$85,000/year (commensurate with experience)</li>
+      <li>Comprehensive health, dental, and vision insurance</li>
+      <li>Illinois Teachers' Retirement System (TRS) pension contribution</li>
+      <li>Generous paid time off and paid school holidays</li>
+      <li>Annual professional development stipend ($1,000)</li>
+      <li>Supportive district administration with strong school nursing program</li>
+      <li>Summer break schedule (10-month employment with options for summer work)</li>
+    </ul>
+
+    <h2>About the District</h2>
+    <p>This is a highly regarded suburban Chicago school district known for its commitment to student wellness and strong academic programming. The district has invested significantly in its school health program over the past five years, including updated health office facilities at each campus and a district-wide electronic health record system.</p>
+    <p>The community is tight-knit and supportive, with active parent organizations and a school board that prioritizes whole-child education. Nurses in this district report high job satisfaction and strong administrative backing.</p>
+  </div>
+
+  <div class="job-sidebar">
+    <div class="sidebar-card">
+      <h3>Quick Apply</h3>
+      <a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" class="btn btn-primary btn-lg btn-full" target="_blank" rel="noopener" style="margin-bottom:12px;">Apply Through Portal</a>
+      <p style="font-size:0.82rem;color:var(--gray-500);text-align:center;">Log into your employee account to submit your application.</p>
+    </div>
+    <div class="sidebar-card">
+      <h3>Job Details</h3>
+      <div class="quick-detail"><span class="quick-detail-label">Job Type</span><span class="quick-detail-value">Full-Time</span></div>
+      <div class="quick-detail"><span class="quick-detail-label">Location</span><span class="quick-detail-value">Chicago, IL</span></div>
+      <div class="quick-detail"><span class="quick-detail-label">Salary</span><span class="quick-detail-value">$75K–$85K/yr</span></div>
+      <div class="quick-detail"><span class="quick-detail-label">License Required</span><span class="quick-detail-value">IL RN + BSN</span></div>
+      <div class="quick-detail"><span class="quick-detail-label">Start Date</span><span class="quick-detail-value">August 2025</span></div>
+      <div class="quick-detail"><span class="quick-detail-label">Student Population</span><span class="quick-detail-value">~800 / campus</span></div>
+    </div>
+    <div class="sidebar-card">
+      <h3>Similar Jobs</h3>
+      <ul class="similar-jobs">
+        <li><a href="school-rn-los-angeles.html" class="similar-job-link"><span class="similar-job-title">School RN — Los Angeles, CA</span><span class="similar-job-meta">Per Diem · $55–65/hr</span></a></li>
+        <li><a href="school-rn-new-york.html" class="similar-job-link"><span class="similar-job-title">School RN — New York, NY</span><span class="similar-job-meta">Contract · $60–70/hr</span></a></li>
+        <li><a href="school-nurse-coordinator.html" class="similar-job-link"><span class="similar-job-title">Nurse Coordinator — Dallas, TX</span><span class="similar-job-meta">Full-Time · $80,000–95,000/yr</span></a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand"><div class="logo"><span class="logo-name">Tempositions</span><span class="logo-tag">School Nursing Specialists</span></div><p>Connecting qualified school nurses with districts nationwide since 2009.</p></div>
+      <div class="footer-col"><h4>Pages</h4><a href="../index.html">Home</a><a href="../services.html">Services</a><a href="../careers.html">Careers</a><a href="../about.html">About Us</a></div>
+      <div class="footer-col"><h4>Portals</h4><a href="https://apps.tempositions.com/EWA/auth/sign-in?sd=7" target="_blank">Employee Login</a><a href="https://apps.tempositions.com/CWA/auth/sign-in?sd=7" target="_blank">Client Login</a></div>
+      <div class="footer-col"><h4>Contact</h4><a href="mailto:info@tempositions.com">info@tempositions.com</a><a href="tel:+18005550100">(800) 555-0100</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2025 Tempositions. All rights reserved.</span><span>School Nursing Staffing Specialists</span></div>
+  </div>
+</footer>
+<script>
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10));
+  document.getElementById('hamburger').addEventListener('click', () => document.getElementById('mobile-menu').classList.toggle('open'));
+</script>
+</body>
+</html>
